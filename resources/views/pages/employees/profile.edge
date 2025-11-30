@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Profil Saya - Sistem Manajemen Karyawan</title>
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+        background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
+        min-height: 100vh;
+        color: white;
+      }
+      
+      nav {
+        background: rgba(255, 255, 255, 0.05);
+        backdrop-filter: blur(16px);
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        position: sticky;
+        top: 0;
+        z-index: 100;
+      }
+      
+      nav .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 20px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        height: 64px;
+      }
+      
+      nav .logo {
+        font-size: 20px;
+        font-weight: 700;
+        color: white;
+        text-decoration: none;
+      }
+      
+      nav .nav-links {
+        display: flex;
+        gap: 32px;
+        align-items: center;
+      }
+      
+      nav .nav-links a {
+        color: rgba(255, 255, 255, 0.7);
+        text-decoration: none;
+        font-size: 14px;
+        font-weight: 500;
+        transition: color 0.2s;
+        padding: 8px 0;
+        border-bottom: 2px solid transparent;
+      }
+      
+      nav .nav-links a:hover,
+      nav .nav-links a.active {
+        color: white;
+        border-bottom-color: rgba(255, 255, 255, 0.5);
+      }
+      
+      nav .user-section {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+      }
+      
+      nav .badge {
+        padding: 4px 10px;
+        border-radius: 12px;
+        font-size: 11px;
+        font-weight: 600;
+        background: rgba(255, 255, 255, 0.15);
+      }
+      
+      nav button {
+        background: none;
+        border: none;
+        color: rgba(255, 255, 255, 0.6);
+        font-size: 14px;
+        cursor: pointer;
+        transition: color 0.2s;
+      }
+      
+      nav button:hover {
+        color: white;
+      }
+      
+      .main-container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 32px 20px;
+      }
+      
+      .page-header {
+        margin-bottom: 32px;
+      }
+      
+      .page-header h1 {
+        font-size: 28px;
+        font-weight: 600;
+        margin-bottom: 6px;
+      }
+      
+      .page-header p {
+        font-size: 14px;
+        color: rgba(255, 255, 255, 0.6);
+      }
+      
+      .profile-card {
+        background: rgba(255, 255, 255, 0.05);
+        backdrop-filter: blur(16px);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 16px;
+        overflow: hidden;
+      }
+      
+      .profile-header {
+        background: linear-gradient(135deg, rgba(59, 130, 246, 0.3) 0%, rgba(37, 99, 235, 0.3) 100%);
+        padding: 32px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      }
+      
+      .profile-header h2 {
+        font-size: 24px;
+        font-weight: 700;
+        margin-bottom: 4px;
+      }
+      
+      .profile-header p {
+        font-size: 14px;
+        color: rgba(255, 255, 255, 0.7);
+      }
+      
+      .profile-body {
+        padding: 0;
+      }
+      
+      .profile-row {
+        display: grid;
+        grid-template-columns: 200px 1fr;
+        gap: 24px;
+        padding: 24px 32px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+      }
+      
+      .profile-row:last-child {
+        border-bottom: none;
+      }
+      
+      .profile-row:nth-child(even) {
+        background: rgba(255, 255, 255, 0.02);
+      }
+      
+      .profile-label {
+        font-size: 14px;
+        font-weight: 600;
+        color: rgba(255, 255, 255, 0.6);
+      }
+      
+      .profile-value {
+        font-size: 15px;
+        color: white;
+      }
+      
+      .profile-value.mono {
+        font-family: 'Courier New', monospace;
+        font-size: 13px;
+        color: rgba(255, 255, 255, 0.8);
+      }
+      
+      .info-box {
+        background: rgba(59, 130, 246, 0.1);
+        border: 1px solid rgba(59, 130, 246, 0.3);
+        border-radius: 12px;
+        padding: 16px;
+        margin: 24px 32px;
+      }
+      
+      .info-box p {
+        font-size: 13px;
+        color: rgba(147, 197, 253, 0.9);
+        line-height: 1.6;
+      }
+      
+      .action-buttons {
+        display: flex;
+        gap: 12px;
+        padding: 24px 32px;
+      }
+      
+      .btn {
+        flex: 1;
+        padding: 12px 24px;
+        border: none;
+        border-radius: 12px;
+        font-size: 14px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s;
+        text-align: center;
+        text-decoration: none;
+        display: inline-block;
+      }
+      
+      .btn-primary {
+        background: rgba(59, 130, 246, 0.2);
+        color: #93c5fd;
+        border: 1px solid rgba(59, 130, 246, 0.3);
+      }
+      
+      .btn-primary:hover {
+        background: rgba(59, 130, 246, 0.3);
+        border-color: rgba(59, 130, 246, 0.5);
+      }
+      
+      .btn-secondary {
+        background: rgba(255, 255, 255, 0.05);
+        color: rgba(255, 255, 255, 0.8);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+      }
+      
+      .btn-secondary:hover {
+        background: rgba(255, 255, 255, 0.08);
+        border-color: rgba(255, 255, 255, 0.2);
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Navigation -->
+    <nav>
+      <div class="container">
+        <a href="{{ route('absensi.index') }}" class="logo">Manajemen Karyawan</a>
+        <div class="nav-links">
+          <a href="{{ route('absensi.index') }}">Absensi</a>
+          <a href="{{ route('absensi.history') }}">History</a>
+          <a href="{{ route('holidays.employee') }}">Hari Libur</a>
+          <a href="{{ route('employees.profile') }}" class="active">Profile</a>
+        </div>
+        <div class="user-section">
+          <span>{{ user.name }}</span>
+          <span class="badge">Employee</span>
+          <form action="{{ route('auth.logout') }}" method="POST" style="display: inline;">
+            {{ csrfField() }}
+            <button type="submit">Logout</button>
+          </form>
+        </div>
+      </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="main-container">
+      <!-- Page Header -->
+      <div class="page-header">
+        <h1>Profil Saya</h1>
+        <p>Informasi profil karyawan Anda</p>
+      </div>
+
+      <!-- Profile Card -->
+      <div class="profile-card">
+        <!-- Profile Header -->
+        <div class="profile-header">
+          <h2>{{ employee.name }}</h2>
+          <p>{{ employee.position }} - {{ employee.department }}</p>
+        </div>
+
+        <!-- Profile Body -->
+        <div class="profile-body">
+          <!-- Name -->
+          <div class="profile-row">
+            <div class="profile-label">Nama Lengkap</div>
+            <div class="profile-value">{{ employee.name }}</div>
+          </div>
+
+          <!-- Position -->
+          <div class="profile-row">
+            <div class="profile-label">Posisi</div>
+            <div class="profile-value">{{ employee.position }}</div>
+          </div>
+
+          <!-- Department -->
+          <div class="profile-row">
+            <div class="profile-label">Departemen</div>
+            <div class="profile-value">{{ employee.department }}</div>
+          </div>
+
+          <!-- Salary -->
+          <div class="profile-row">
+            <div class="profile-label">Gaji (per tahun)</div>
+            <div class="profile-value">Rp {{ employee.salary.toLocaleString('id-ID') }}</div>
+          </div>
+
+          <!-- Join Date -->
+          <div class="profile-row">
+            <div class="profile-label">Tanggal Bergabung</div>
+            <div class="profile-value">{{ employee.join_date }}</div>
+          </div>
+
+          <!-- Email -->
+          <div class="profile-row">
+            <div class="profile-label">Email Akun</div>
+            <div class="profile-value">{{ user.email }}</div>
+          </div>
+
+          <!-- Employee ID -->
+          <div class="profile-row">
+            <div class="profile-label">ID Karyawan</div>
+            <div class="profile-value mono">{{ employee._id }}</div>
+          </div>
+        </div>
+
+        <!-- Info Box -->
+        <div class="info-box">
+          <p>
+            ℹ️ Jika ada kesalahan data pada profil Anda, silakan hubungi admin untuk melakukan perubahan.
+          </p>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="action-buttons">
+          <a href="{{ route('absensi.index') }}" class="btn btn-primary">
+            📋 Ke Halaman Absensi
+          </a>
+          <a href="{{ route('absensi.history') }}" class="btn btn-secondary">
+            📊 Lihat History Absensi
+          </a>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>
+        </dl>
+      </div>
+    </div>
+
+    <!-- Action Buttons -->
+    <div class="mt-6 flex gap-4">
+      <a
+        href="{{ route('absensi.index') }}"
+        class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+      >
+        <svg class="mr-2 -ml-1 h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+        </svg>
+        Ke Halaman Absensi
+      </a>
+      
+      <a
+        href="{{ route('absensi.history') }}"
+        class="inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md shadow-sm text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+      >
+        <svg class="mr-2 -ml-1 h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+        </svg>
+        Lihat History Absensi
+      </a>
+    </div>
+
+    <!-- Info Box -->
+    <div class="mt-6 bg-blue-50 border border-blue-200 rounded-lg p-4">
+      <div class="flex">
+        <div class="flex-shrink-0">
+          <svg class="h-5 w-5 text-blue-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+            <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd" />
+          </svg>
+        </div>
+        <div class="ml-3">
+          <h3 class="text-sm font-medium text-blue-800">
+            Informasi
+          </h3>
+          <div class="mt-2 text-sm text-blue-700">
+            <p>
+              Jika ada kesalahan data pada profil Anda, silakan hubungi admin untuk melakukan perubahan.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+@end

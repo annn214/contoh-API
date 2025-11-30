@@ -1,0 +1,626 @@
+<!DOCTYPE html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>
+      Absensi - Sistem Manajemen Karyawan
+    </title>
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+        background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
+        min-height: 100vh;
+        color: white;
+        position: relative;
+        overflow-x: hidden;
+      }
+      
+      body::before {
+        content: '';
+        position: fixed;
+        width: 400px;
+        height: 400px;
+        background: radial-gradient(circle, rgba(255,255,255,0.03) 0%, transparent 70%);
+        top: -200px;
+        right: -200px;
+        animation: float 10s ease-in-out infinite;
+      }
+      
+      @keyframes float {
+        0%, 100% {
+          transform: translateY(0);
+        }
+      
+        50% {
+          transform: translateY(-20px);
+        }
+      }
+      
+      nav {
+        background: rgba(255, 255, 255, 0.05);
+        backdrop-filter: blur(16px);
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        position: sticky;
+        top: 0;
+        z-index: 100;
+      }
+      
+      nav .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 20px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        height: 64px;
+      }
+      
+      nav .logo {
+        font-size: 20px;
+        font-weight: 700;
+        color: white;
+        text-decoration: none;
+      }
+      
+      nav .nav-links {
+        display: flex;
+        gap: 32px;
+        align-items: center;
+      }
+      
+      nav .nav-links a {
+        color: rgba(255, 255, 255, 0.7);
+        text-decoration: none;
+        font-size: 14px;
+        font-weight: 500;
+        transition: color 0.2s;
+        padding: 8px 0;
+        border-bottom: 2px solid transparent;
+      }
+      
+      nav .nav-links a:hover,
+      nav .nav-links a.active {
+        color: white;
+        border-bottom-color: rgba(255, 255, 255, 0.5);
+      }
+      
+      nav .user-section {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+      }
+      
+      nav .badge {
+        padding: 4px 10px;
+        border-radius: 12px;
+        font-size: 11px;
+        font-weight: 600;
+        background: rgba(255, 255, 255, 0.15);
+      }
+      
+      nav button {
+        background: none;
+        border: none;
+        color: rgba(255, 255, 255, 0.6);
+        font-size: 14px;
+        cursor: pointer;
+        transition: color 0.2s;
+      }
+      
+      nav button:hover {
+        color: white;
+      }
+      
+      .main-container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 32px 20px;
+      }
+      
+      .alert {
+        padding: 14px 16px;
+        border-radius: 12px;
+        margin-bottom: 24px;
+        font-size: 14px;
+        backdrop-filter: blur(10px);
+      }
+      
+      .alert-success {
+        background: rgba(76, 175, 80, 0.15);
+        border: 1px solid rgba(76, 175, 80, 0.3);
+        color: #a5d6a7;
+      }
+      
+      .alert-error {
+        background: rgba(255, 100, 100, 0.15);
+        border: 1px solid rgba(255, 100, 100, 0.2);
+        color: #ffcccc;
+      }
+      
+      .page-header {
+        margin-bottom: 32px;
+      }
+      
+      .page-header h1 {
+        font-size: 28px;
+        font-weight: 600;
+        margin-bottom: 6px;
+      }
+      
+      .page-header p {
+        font-size: 14px;
+        color: rgba(255, 255, 255, 0.6);
+      }
+      
+      .grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 24px;
+        margin-bottom: 32px;
+      }
+      
+      .card {
+        background: rgba(255, 255, 255, 0.05);
+        backdrop-filter: blur(16px);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 16px;
+        padding: 24px;
+        transition: all 0.3s;
+      }
+      
+      .card:hover {
+        transform: translateY(-2px);
+        border-color: rgba(255, 255, 255, 0.2);
+      }
+      
+      .card-title {
+        font-size: 14px;
+        font-weight: 600;
+        color: rgba(255, 255, 255, 0.6);
+        margin-bottom: 8px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+      }
+      
+      .card-value {
+        font-size: 32px;
+        font-weight: 700;
+        margin-bottom: 4px;
+      }
+      
+      .card-subtitle {
+        font-size: 13px;
+        color: rgba(255, 255, 255, 0.5);
+      }
+      
+      .status-badge {
+        display: inline-block;
+        padding: 6px 14px;
+        border-radius: 20px;
+        font-size: 12px;
+        font-weight: 600;
+        margin-top: 8px;
+      }
+      
+      .status-present {
+        background: rgba(76, 175, 80, 0.2);
+        color: #a5d6a7;
+        border: 1px solid rgba(76, 175, 80, 0.3);
+      }
+      
+      .status-late {
+        background: rgba(255, 152, 0, 0.2);
+        color: #ffcc80;
+        border: 1px solid rgba(255, 152, 0, 0.3);
+      }
+      
+      .status-absent {
+        background: rgba(244, 67, 54, 0.2);
+        color: #ef9a9a;
+        border: 1px solid rgba(244, 67, 54, 0.3);
+      }
+      
+      .action-buttons {
+        display: flex;
+        gap: 12px;
+        margin-top: 32px;
+      }
+      
+      .btn {
+        flex: 1;
+        padding: 16px 24px;
+        border: none;
+        border-radius: 12px;
+        font-size: 15px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s;
+        text-align: center;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+      }
+      
+      .btn-primary {
+        background: rgba(76, 175, 80, 0.9);
+        color: white;
+      }
+      
+      .btn-primary:hover:not(:disabled) {
+        background: rgba(76, 175, 80, 1);
+        transform: translateY(-2px);
+      }
+      
+      .btn-secondary {
+        background: rgba(33, 150, 243, 0.9);
+        color: white;
+      }
+      
+      .btn-secondary:hover:not(:disabled) {
+        background: rgba(33, 150, 243, 1);
+        transform: translateY(-2px);
+      }
+      
+      .btn:disabled {
+        opacity: 0.4;
+        cursor: not-allowed;
+      }
+      
+      .btn-outline {
+        background: transparent;
+        border: 2px solid rgba(255, 255, 255, 0.2);
+        color: white;
+      }
+      
+      .btn-outline:hover {
+        background: rgba(255, 255, 255, 0.05);
+        border-color: rgba(255, 255, 255, 0.3);
+        transform: translateY(-2px);
+      }
+      
+      .recent-section {
+        margin-top: 48px;
+      }
+      
+      .section-title {
+        font-size: 20px;
+        font-weight: 600;
+        margin-bottom: 20px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+      
+      .table-container {
+        background: rgba(255, 255, 255, 0.05);
+        backdrop-filter: blur(16px);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 16px;
+        overflow: hidden;
+      }
+      
+      table {
+        width: 100%;
+        border-collapse: collapse;
+      }
+      
+      thead {
+        background: rgba(255, 255, 255, 0.05);
+      }
+      
+      th {
+        padding: 16px 20px;
+        text-align: left;
+        font-size: 13px;
+        font-weight: 600;
+        color: rgba(255, 255, 255, 0.7);
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+      }
+      
+      td {
+        padding: 16px 20px;
+        border-top: 1px solid rgba(255, 255, 255, 0.05);
+        font-size: 14px;
+      }
+      
+      tbody tr {
+        transition: background 0.2s;
+      }
+      
+      tbody tr:hover {
+        background: rgba(255, 255, 255, 0.03);
+      }
+      
+      .empty-state {
+        padding: 60px 20px;
+        text-align: center;
+        color: rgba(255, 255, 255, 0.5);
+      }
+      
+      .empty-state svg {
+        width: 64px;
+        height: 64px;
+        margin-bottom: 16px;
+        opacity: 0.3;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Navigation -->
+    <nav>
+      <div class="container">
+        <a
+          href="{{ user.role === 'admin' ? route('dashboard.index') : route('absensi.index') }}"
+          class="logo"
+        >Manajemen Karyawan</a>
+        <div class="nav-links">
+          @if(user.role === 'admin')
+            <a href="{{ route('dashboard.index') }}">Dashboard</a>
+            <a href="{{ route('employees.index') }}">Karyawan</a>
+            <a href="{{ route('absensi.history') }}">History Absensi</a>
+            <a href="{{ route('employees.create') }}">Tambah Karyawan</a>
+          @else
+            <a href="{{ route('absensi.index') }}" class="active">Absensi</a>
+            <a href="{{ route('absensi.history') }}">History</a>
+            <a href="{{ route('holidays.employee') }}">Hari Libur</a>
+            <a href="{{ route('employees.profile') }}">Profile</a>
+          @end
+        </div>
+        <div class="user-section">
+          <span>{{ user.name }}</span>
+          @if(user.role === 'admin')
+            <span class="badge">Admin</span>
+          @else
+            <span class="badge">Employee</span>
+          @end
+          <form action="{{ route('auth.logout') }}" method="POST" style="display: inline;">
+            {{ csrfField() }}
+            <button type="submit">Logout</button>
+          </form>
+        </div>
+      </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="main-container">
+      <!-- Alerts -->
+      @if(flashMessages.has('success'))
+        <div class="alert alert-success">
+          {{ flashMessages.get('success') }}
+        </div>
+      @end
+      
+      @if(flashMessages.has('error'))
+        <div class="alert alert-error">
+          {{ flashMessages.get('error') }}
+        </div>
+      @end
+      
+      <!-- Page Header -->
+      <div class="page-header">
+        <div>
+          <h1>
+            Absensi
+          </h1>
+          <p>
+            {{ currentDateTimeFormatted }}
+          </p>
+        </div>
+      </div>
+
+      <!-- Status Cards -->
+      <div class="grid">
+        <div class="card">
+          <div class="card-title">
+            Status Hari Ini
+          </div>
+          @if(todayAttendance)
+            <div class="card-value">
+              ✓ Check-in
+            </div>
+            <div class="card-subtitle">
+              {{ new Date(todayAttendance.check_in).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit', second: '2-digit' }) }}
+            </div>
+            @if(todayAttendance.status === 'late')
+              <span class="status-badge status-late">Terlambat {{ todayAttendance.late_duration }} menit</span>
+            @else
+              <span class="status-badge status-present">Tepat Waktu</span>
+            @end
+          @else
+            <div class="card-value">
+              Belum Absen
+            </div>
+            <div class="card-subtitle">
+              Silakan check-in
+            </div>
+          @end
+        </div>
+
+        <div class="card">
+          <div class="card-title">
+            Check-out
+          </div>
+          @if(todayAttendance && todayAttendance.check_out)
+            <div class="card-value">
+              ✓ Selesai
+            </div>
+            <div class="card-subtitle">
+              {{ new Date(todayAttendance.check_out).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit', second: '2-digit' }) }}
+            </div>
+            <span class="status-badge status-present">{{ Math.floor(todayAttendance.work_duration / 60) }}j {{ todayAttendance.work_duration % 60 }}m</span>
+          @elseif(todayAttendance)
+            <div class="card-value">
+              Belum Check-out
+            </div>
+            <div class="card-subtitle">
+              Jangan lupa check-out
+            </div>
+          @else
+            <div class="card-value">
+              -
+            </div>
+            <div class="card-subtitle">
+              Check-in terlebih dahulu
+            </div>
+          @end
+        </div>
+
+        <div class="card">
+          <div class="card-title">
+            Karyawan
+          </div>
+          <div class="card-value">
+            {{ employee.name }}
+          </div>
+          <div class="card-subtitle">
+            {{ employee.position }} - {{ employee.department }}
+          </div>
+        </div>
+      </div>
+
+      <!-- Action Buttons -->
+      <div class="action-buttons">
+        @if(!todayAttendance)
+          <form action="{{ route('absensi.checkIn') }}" method="POST" style="flex: 1;">
+            {{ csrfField() }}
+            <button type="submit" class="btn btn-primary" style="width: 100%;">
+              <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" width="20" height="20">
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"
+                />
+
+              </svg>
+              Check-in Sekarang
+            </button>
+          </form>
+        @elseif(!todayAttendance.check_out)
+          <form action="{{ route('absensi.checkOut') }}" method="POST" style="flex: 1;">
+            {{ csrfField() }}
+            <button type="submit" class="btn btn-secondary" style="width: 100%;">
+              <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" width="20" height="20">
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"
+                />
+
+              </svg>
+              Check-out Sekarang
+            </button>
+          </form>
+        @else
+          <button class="btn btn-primary" disabled style="flex: 1;">
+            ✓ Absensi Hari Ini Selesai
+          </button>
+        @end
+        
+        <a href="{{ route('absensi.history') }}" class="btn btn-outline">
+          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" width="20" height="20">
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+            />
+
+          </svg>
+          Lihat Riwayat
+        </a>
+      </div>
+
+      <!-- Recent Attendance -->
+      <div class="recent-section">
+        <div class="section-title">
+          <span>Absensi 7 Hari Terakhir</span>
+        </div>
+
+        <div class="table-container">
+          @if(recentAttendance.length > 0)
+            <table>
+              <thead>
+                <tr>
+                  <th>
+                    Tanggal
+                  </th>
+                  <th>
+                    Check-in
+                  </th>
+                  <th>
+                    Check-out
+                  </th>
+                  <th>
+                    Durasi
+                  </th>
+                  <th>
+                    Status
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                @each(record in recentAttendance)
+                  <tr>
+                    <td>
+                      {{ new Date(record.date).toLocaleDateString('id-ID', { year: 'numeric', month: 'long', day: 'numeric' }) }}
+                    </td>
+                    <td>
+                      {{ new Date(record.check_in).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit', second: '2-digit' }) }}
+                    </td>
+                    <td>
+                      {{ record.check_out ? new Date(record.check_out).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit', second: '2-digit' }) : '-' }}
+                    </td>
+                    <td>
+                      @if(record.work_duration)
+                        {{ Math.floor(record.work_duration / 60) }}j {{ record.work_duration % 60 }}m
+                      @else
+                        -
+                      @end
+                    </td>
+                    <td>
+                      @if(record.status === 'present')
+                        <span class="status-badge status-present">Hadir</span>
+                      @elseif(record.status === 'late')
+                        <span class="status-badge status-late">Terlambat</span>
+                      @else
+                        <span class="status-badge status-absent">Tidak Hadir</span>
+                      @end
+                    </td>
+                  </tr>
+                @end
+              </tbody>
+            </table>
+          @else
+            <div class="empty-state">
+              <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+                />
+
+              </svg>
+              <p>
+                Belum ada riwayat absensi
+              </p>
+            </div>
+          @end
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

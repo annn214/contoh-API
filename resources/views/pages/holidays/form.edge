@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>
+      {{ action === 'create' ? 'Tambah' : 'Edit' }} Hari Libur - Sistem Manajemen Karyawan
+    </title>
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+        background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
+        min-height: 100vh;
+        color: white;
+      }
+      
+      nav {
+        background: rgba(255, 255, 255, 0.05);
+        backdrop-filter: blur(16px);
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        position: sticky;
+        top: 0;
+        z-index: 100;
+      }
+      
+      nav .container {
+        max-width: 1400px;
+        margin: 0 auto;
+        padding: 0 20px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        height: 64px;
+      }
+      
+      nav .logo {
+        font-size: 20px;
+        font-weight: 700;
+        color: white;
+        text-decoration: none;
+      }
+      
+      nav .nav-links {
+        display: flex;
+        gap: 32px;
+        align-items: center;
+      }
+      
+      nav .nav-links a {
+        color: rgba(255, 255, 255, 0.7);
+        text-decoration: none;
+        font-size: 14px;
+        font-weight: 500;
+        transition: color 0.2s;
+        padding: 8px 0;
+        border-bottom: 2px solid transparent;
+      }
+      
+      nav .nav-links a:hover,
+      nav .nav-links a.active {
+        color: white;
+        border-bottom-color: rgba(255, 255, 255, 0.5);
+      }
+      
+      nav .user-section {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+      }
+      
+      nav .badge {
+        padding: 4px 10px;
+        border-radius: 12px;
+        background: rgba(99, 102, 241, 0.2);
+        color: rgb(165, 180, 252);
+        font-size: 12px;
+        font-weight: 600;
+      }
+      
+      .logout-btn {
+        padding: 8px 16px;
+        border-radius: 8px;
+        border: 1px solid rgba(239, 68, 68, 0.3);
+        background: rgba(239, 68, 68, 0.1);
+        color: rgb(248, 113, 113);
+        cursor: pointer;
+        font-size: 14px;
+        font-weight: 500;
+        transition: all 0.2s;
+      }
+      
+      .logout-btn:hover {
+        background: rgba(239, 68, 68, 0.2);
+        border-color: rgba(239, 68, 68, 0.5);
+      }
+      
+      .main-container {
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 40px 20px;
+      }
+      
+      .page-header {
+        margin-bottom: 32px;
+      }
+      
+      .page-header h1 {
+        font-size: 32px;
+        font-weight: 700;
+        margin-bottom: 8px;
+      }
+      
+      .page-header p {
+        color: rgba(255, 255, 255, 0.6);
+        font-size: 16px;
+      }
+      
+      .alert {
+        padding: 16px;
+        border-radius: 12px;
+        margin-bottom: 24px;
+        font-size: 14px;
+      }
+      
+      .alert-error {
+        background: rgba(239, 68, 68, 0.1);
+        border: 1px solid rgba(239, 68, 68, 0.3);
+        color: rgb(248, 113, 113);
+      }
+      
+      .card {
+        background: rgba(255, 255, 255, 0.05);
+        backdrop-filter: blur(16px);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 16px;
+        padding: 32px;
+      }
+      
+      .form-group {
+        margin-bottom: 24px;
+      }
+      
+      .form-group label {
+        display: block;
+        margin-bottom: 8px;
+        font-size: 14px;
+        font-weight: 500;
+        color: rgba(255, 255, 255, 0.9);
+      }
+      
+      .form-group label .required {
+        color: rgb(248, 113, 113);
+        margin-left: 4px;
+      }
+      
+      .form-group input,
+      .form-group select,
+      .form-group textarea {
+        width: 100%;
+        padding: 12px 16px;
+        border-radius: 8px;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        background: rgba(255, 255, 255, 0.05);
+        color: white;
+        font-size: 14px;
+        font-family: inherit;
+      }
+      
+      .form-group textarea {
+        min-height: 100px;
+        resize: vertical;
+      }
+      
+      .form-group input:focus,
+      .form-group select:focus,
+      .form-group textarea:focus {
+        outline: none;
+        border-color: rgb(99, 102, 241);
+        background: rgba(255, 255, 255, 0.08);
+      }
+      
+      .form-group .help-text {
+        margin-top: 8px;
+        font-size: 13px;
+        color: rgba(255, 255, 255, 0.5);
+      }
+      
+      .form-group .error-text {
+        margin-top: 8px;
+        font-size: 13px;
+        color: rgb(248, 113, 113);
+      }
+      
+      .checkbox-group {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+      }
+      
+      .checkbox-group input[type="checkbox"] {
+        width: auto;
+        cursor: pointer;
+      }
+      
+      .form-actions {
+        display: flex;
+        gap: 12px;
+        margin-top: 32px;
+      }
+      
+      .btn {
+        padding: 12px 24px;
+        border-radius: 8px;
+        border: none;
+        font-size: 14px;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.2s;
+        text-decoration: none;
+        display: inline-block;
+      }
+      
+      .btn-primary {
+        background: rgb(99, 102, 241);
+        color: white;
+        flex: 1;
+      }
+      
+      .btn-primary:hover {
+        background: rgb(79, 70, 229);
+      }
+      
+      .btn-secondary {
+        background: rgba(255, 255, 255, 0.1);
+        color: white;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+      }
+      
+      .btn-secondary:hover {
+        background: rgba(255, 255, 255, 0.15);
+      }
+    </style>
+  </head>
+  <body>
+    <nav>
+      <div class="container">
+        <a href="/dashboard" class="logo">Sistem Karyawan</a>
+        <div class="nav-links">
+          <a href="/dashboard">Dashboard</a>
+          <a href="/employees">Karyawan</a>
+          <a href="/absensi/history">History Absensi</a>
+          <a href="/holidays" class="active">Hari Libur</a>
+          <a href="/employees/create">Tambah Karyawan</a>
+        </div>
+        <div class="user-section">
+          <span class="badge">Admin</span>
+          <form method="POST" action="/auth/logout" style="display: inline;">
+            {{ csrfField() }}
+            <button type="submit" class="logout-btn">Keluar</button>
+          </form>
+        </div>
+      </div>
+    </nav>
+
+    <div class="main-container">
+      <div class="page-header">
+        <h1>
+          {{ action === 'create' ? 'Tambah' : 'Edit' }} Hari Libur
+        </h1>
+        <p>
+          {{ action === 'create' ? 'Tambahkan hari libur baru ke dalam sistem' : 'Perbarui informasi hari libur' }}
+        </p>
+      </div>
+
+      @if(error)
+        <div class="alert alert-error">
+          {{ error }}
+        </div>
+      @end
+      
+      @if(errors)
+        <div class="alert alert-error">
+          <ul style="margin-left: 20px;">
+            @each(err in errors)
+              <li>
+                {{ err.message }}
+              </li>
+            @end
+          </ul>
+        </div>
+      @end
+      
+      <div class="card">
+        <form method="POST" action="{{ action === 'create' ? '/holidays' : '/holidays/' + holiday._id }}">
+          {{ csrfField() }}
+          @if(action === 'edit')
+            <input type="hidden" name="_method" value="PUT" />
+          @end
+          
+          <div class="form-group">
+            <label>
+              Nama Hari Libur<span class="required">*</span>
+            </label>
+            <input
+              type="text"
+              name="name"
+              value="{{ holiday ? holiday.name : '' }}"
+              required
+              placeholder="Contoh: Tahun Baru Imlek"
+            />
+            <div class="help-text">
+              Nama hari libur yang akan ditampilkan
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label>
+              Tanggal<span class="required">*</span>
+            </label>
+            <input
+              type="date"
+              name="date"
+              value="{{ holiday ? holiday.date.toISOString().split('T')[0] : '' }}"
+              required
+            />
+            <div class="help-text">
+              Tanggal hari libur
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label>
+              Tipe<span class="required">*</span>
+            </label>
+            <select name="type" required>
+              <option value="national" {{ holiday && holiday.type === 'national' ? 'selected' : '' }}>
+                Nasional
+              </option>
+              <option value="religious" {{ holiday && holiday.type === 'religious' ? 'selected' : '' }}>
+                Keagamaan
+              </option>
+              <option value="company" {{ holiday && holiday.type === 'company' ? 'selected' : '' }}>
+                Perusahaan
+              </option>
+              <option value="other" {{ holiday && holiday.type === 'other' ? 'selected' : '' }}>
+                Lainnya
+              </option>
+            </select>
+            <div class="help-text">
+              Kategori hari libur
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label>
+              <div class="checkbox-group">
+                <input
+                  type="checkbox"
+                  name="is_recurring"
+                  value="true"
+                  {{ holiday && holiday.is_recurring ? 'checked' : '' }}
+                />
+                <span>Hari libur berulang setiap tahun</span>
+              </div>
+            </label>
+            <div class="help-text">
+              Centang jika hari libur ini berulang setiap tahun (contoh: Tahun Baru)
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label>
+              Deskripsi
+            </label>
+            <textarea name="description" placeholder="Tambahkan keterangan tambahan (opsional)">{{ holiday ? holiday.description : '' }}</textarea>
+            <div class="help-text">
+              Keterangan tambahan tentang hari libur (opsional)
+            </div>
+          </div>
+
+          <div class="form-actions">
+            <button type="submit" class="btn btn-primary">
+              {{ action === 'create' ? 'Simpan' : 'Perbarui' }}
+            </button>
+            <a href="/holidays" class="btn btn-secondary">Batal</a>
+          </div>
+        </form>
+      </div>
+    </div>
+  </body>
+</html>

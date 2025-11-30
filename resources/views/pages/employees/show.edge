@@ -1,0 +1,609 @@
+<!DOCTYPE html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>
+      {{ employee.name }} - Detail Karyawan
+    </title>
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+        background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
+        min-height: 100vh;
+        color: white;
+        display: flex;
+        flex-direction: column;
+        position: relative;
+        overflow-x: hidden;
+      }
+      
+      body::before {
+        content: '';
+        position: fixed;
+        width: 400px;
+        height: 400px;
+        background: radial-gradient(circle, rgba(255,255,255,0.03) 0%, transparent 70%);
+        top: -200px;
+        right: -200px;
+        animation: float 10s ease-in-out infinite;
+      }
+      
+      @keyframes float {
+        0%, 100% {
+          transform: translateY(0);
+        }
+      
+        50% {
+          transform: translateY(-20px);
+        }
+      }
+      
+      /* Navigation */
+      
+      nav {
+        background: rgba(255, 255, 255, 0.05);
+        backdrop-filter: blur(16px);
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        position: sticky;
+        top: 0;
+        z-index: 100;
+      }
+      
+      nav .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 20px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        height: 64px;
+      }
+      
+      nav .logo {
+        font-size: 20px;
+        font-weight: 700;
+        color: white;
+        text-decoration: none;
+      }
+      
+      nav .nav-links {
+        display: flex;
+        gap: 32px;
+        align-items: center;
+      }
+      
+      nav .nav-links a {
+        color: rgba(255, 255, 255, 0.7);
+        text-decoration: none;
+        font-size: 14px;
+        font-weight: 500;
+        transition: color 0.2s;
+        padding: 8px 0;
+        border-bottom: 2px solid transparent;
+      }
+      
+      nav .nav-links a:hover {
+        color: white;
+        border-bottom-color: rgba(255, 255, 255, 0.5);
+      }
+      
+      nav .user-section {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+      }
+      
+      nav .user-name {
+        font-size: 14px;
+        color: rgba(255, 255, 255, 0.8);
+      }
+      
+      nav .badge {
+        padding: 4px 10px;
+        border-radius: 12px;
+        font-size: 11px;
+        font-weight: 600;
+        background: rgba(255, 255, 255, 0.15);
+        color: white;
+      }
+      
+      nav button {
+        background: none;
+        border: none;
+        color: rgba(255, 255, 255, 0.6);
+        font-size: 14px;
+        cursor: pointer;
+        transition: color 0.2s;
+      }
+      
+      nav button:hover {
+        color: white;
+      }
+      
+      /* Alert */
+      
+      .alert-container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 20px 20px 0;
+      }
+      
+      .alert {
+        padding: 14px 16px;
+        border-radius: 12px;
+        margin-bottom: 20px;
+        font-size: 14px;
+        backdrop-filter: blur(10px);
+      }
+      
+      .alert-success {
+        background: rgba(255, 255, 255, 0.1);
+        border: 1px solid rgba(255, 255, 255, 0.15);
+        color: #ffffff;
+      }
+      
+      .alert-error {
+        background: rgba(255, 100, 100, 0.15);
+        border: 1px solid rgba(255, 100, 100, 0.2);
+        color: #ffcccc;
+      }
+      
+      .alert ul {
+        list-style: disc;
+        margin-left: 20px;
+      }
+      
+      /* Main Content */
+      
+      main {
+        flex: 1;
+        padding: 32px 20px;
+        max-width: 1200px;
+        margin: 0 auto;
+        width: 100%;
+      }
+      
+      /* Header Section */
+      
+      .header-section {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 32px;
+        flex-wrap: wrap;
+        gap: 20px;
+      }
+      
+      .header-section h1 {
+        font-size: 28px;
+        font-weight: 600;
+        color: white;
+      }
+      
+      .button-group {
+        display: flex;
+        gap: 12px;
+        flex-wrap: wrap;
+      }
+      
+      .btn {
+        padding: 10px 18px;
+        border-radius: 10px;
+        font-size: 14px;
+        font-weight: 600;
+        cursor: pointer;
+        text-decoration: none;
+        transition: all 0.2s;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+      }
+      
+      .btn-secondary {
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid rgba(255, 255, 255, 0.15);
+        color: rgba(255, 255, 255, 0.8);
+      }
+      
+      .btn-secondary:hover {
+        background: rgba(255, 255, 255, 0.1);
+        color: white;
+      }
+      
+      .btn-primary {
+        background: rgba(255, 255, 255, 0.9);
+        color: #1a1a1a;
+        border: none;
+      }
+      
+      .btn-primary:hover {
+        background: white;
+        transform: translateY(-1px);
+      }
+      
+      .btn-danger {
+        background: rgba(255, 100, 100, 0.2);
+        border: 1px solid rgba(255, 100, 100, 0.3);
+        color: #ffcccc;
+      }
+      
+      .btn-danger:hover {
+        background: rgba(255, 100, 100, 0.3);
+        border-color: rgba(255, 100, 100, 0.4);
+      }
+      
+      /* Details Card */
+      
+      .details-card {
+        background: rgba(255, 255, 255, 0.08);
+        backdrop-filter: blur(16px);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 20px;
+        overflow: hidden;
+      }
+      
+      .card-header {
+        padding: 28px 32px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        background: rgba(255, 255, 255, 0.03);
+      }
+      
+      .card-header h2 {
+        font-size: 22px;
+        font-weight: 600;
+        color: white;
+        margin-bottom: 4px;
+      }
+      
+      .card-header p {
+        font-size: 14px;
+        color: rgba(255, 255, 255, 0.6);
+      }
+      
+      /* Detail Row */
+      
+      .detail-row {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 8px;
+        padding: 20px 32px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        transition: background 0.2s;
+      }
+      
+      .detail-row:last-child {
+        border-bottom: none;
+      }
+      
+      .detail-row:hover {
+        background: rgba(255, 255, 255, 0.03);
+      }
+      
+      @media (min-width: 640px) {
+        .detail-row {
+          grid-template-columns: 200px 1fr;
+          gap: 20px;
+        }
+      }
+      
+      .detail-label {
+        font-size: 12px;
+        font-weight: 600;
+        color: rgba(255, 255, 255, 0.5);
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+      }
+      
+      .detail-value {
+        font-size: 15px;
+        color: rgba(255, 255, 255, 0.9);
+        font-weight: 500;
+      }
+      
+      /* Footer */
+      
+      footer {
+        margin-top: auto;
+        padding: 24px 0;
+        text-align: center;
+        border-top: 1px solid rgba(255, 255, 255, 0.05);
+      }
+      
+      footer p {
+        font-size: 13px;
+        color: rgba(255, 255, 255, 0.5);
+      }
+      
+      /* Responsive */
+      
+      @media (max-width: 768px) {
+        nav .nav-links {
+          display: none;
+        }
+      
+        .header-section {
+          flex-direction: column;
+          align-items: flex-start;
+        }
+      
+        .header-section h1 {
+          font-size: 24px;
+        }
+      
+        .button-group {
+          width: 100%;
+        }
+      
+        .btn {
+          flex: 1;
+          justify-content: center;
+        }
+      
+        .card-header,
+        .detail-row {
+          padding-left: 20px;
+          padding-right: 20px;
+        }
+      }
+      
+      @media (max-height: 800px) {
+        main {
+          padding: 24px 20px;
+        }
+      
+        .header-section {
+          margin-bottom: 24px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Navigation -->
+    <nav>
+      <div class="container">
+        <a href="{{ route('dashboard.index') }}" class="logo">Manajemen Karyawan</a>
+        <div class="nav-links">
+          <a href="{{ route('dashboard.index') }}">Dashboard</a>
+          <a href="{{ route('employees.index') }}" class="active">Karyawan</a>
+          <a href="{{ route('absensi.history') }}">History Absensi</a>
+          <a href="{{ route('holidays.index') }}">Hari Libur</a>
+          <a href="{{ route('employees.create') }}">Tambah Karyawan</a>
+        </div>
+        <div class="user-section">
+          @if(user)
+            <span class="user-name">
+              {{ user.name }}
+              @if(user.role === 'admin')
+                <span class="badge">Admin</span>
+              @end
+            </span>
+            <form action="{{ route('auth.logout') }}" method="POST" style="display: inline;">
+              {{ csrfField() }}
+              <button type="submit">Keluar</button>
+            </form>
+          @end
+        </div>
+      </div>
+    </nav>
+
+    <!-- Flash Messages -->
+    <div class="alert-container">
+      @if(flashMessages.has('success'))
+        <div class="alert alert-success">
+          {{ flashMessages.get('success') }}
+        </div>
+      @end
+      
+      @if(flashMessages.has('employeeCredentials'))
+        @set('credentials', flashMessages.get('employeeCredentials'))
+          <div
+            class="alert alert-success"
+            style="background: rgba(34, 197, 94, 0.15); border: 1px solid rgba(34, 197, 94, 0.3); padding: 20px;"
+          >
+            <h3 style="margin-bottom: 12px; font-size: 16px; font-weight: 600;">
+              ✅ Akun Karyawan Berhasil Dibuat
+            </h3>
+            <p style="margin-bottom: 16px; font-size: 14px; opacity: 0.9;">
+              Berikan kredensial berikut kepada karyawan untuk login:
+            </p>
+            <div
+              style="background: rgba(0,0,0,0.2); padding: 16px; border-radius: 8px; font-family: monospace; font-size: 13px;"
+            >
+              <div style="margin-bottom: 8px;">
+                <strong>Nama:</strong>{{ credentials.name }}
+              </div>
+              <div style="margin-bottom: 8px;">
+                <strong>Email:</strong>                <span style="color: #60a5fa;">{{ credentials.email }}</span>
+              </div>
+              <div style="margin-bottom: 8px;">
+                <strong>Password:</strong>                <span style="color: #fbbf24;">{{ credentials.password }}</span>
+              </div>
+            </div>
+            <p style="margin-top: 12px; font-size: 12px; opacity: 0.7;">
+              ⚠️ Simpan password ini! Password tidak akan ditampilkan lagi.
+            </p>
+          </div>
+        @end
+        
+        @if(flashMessages.has('error'))
+          <div class="alert alert-error">
+            {{ flashMessages.get('error') }}
+          </div>
+        @end
+        
+        @if(flashMessages.has('errors'))
+          <div class="alert alert-error">
+            <ul>
+              @each(error in flashMessages.get('errors'))
+                <li>
+                  {{ error.message }}
+                </li>
+              @end
+            </ul>
+          </div>
+        @end
+      </div>
+
+      <!-- Main Content -->
+      <main>
+        <!-- Header Section -->
+        <div class="header-section">
+          <h1>
+            Detail Karyawan
+          </h1>
+          <div class="button-group">
+            <a href="{{ route('employees.index') }}" class="btn btn-secondary">Kembali ke Daftar</a>
+            @if(user && user.role === 'admin')
+              <a href="{{ route('employees.edit', { id: employee._id }) }}" class="btn btn-primary">Edit</a>
+              <button type="button" class="btn btn-danger" onclick="deleteEmployee('{{ employee._id }}')">
+                Hapus
+            </button>
+            @end
+          </div>
+        </div>
+
+        <!-- Details Card -->
+        <div class="details-card">
+          <div class="card-header">
+            <h2>
+              {{ employee.name }}
+            </h2>
+            <p>
+              Informasi pribadi dan profesional
+            </p>
+          </div>
+
+          <div class="detail-row">
+            <div class="detail-label">
+              Nama Lengkap
+            </div>
+            <div class="detail-value">
+              {{ employee.name }}
+            </div>
+          </div>
+
+          <div class="detail-row">
+            <div class="detail-label">
+              Jabatan
+            </div>
+            <div class="detail-value">
+              {{ employee.position }}
+            </div>
+          </div>
+
+          <div class="detail-row">
+            <div class="detail-label">
+              Departemen
+            </div>
+            <div class="detail-value">
+              {{ employee.department }}
+            </div>
+          </div>
+
+          <div class="detail-row">
+            <div class="detail-label">
+              Gaji
+            </div>
+            <div class="detail-value">
+              {{ employee.salary_currency || 'IDR' }} {{ employee.salary.toLocaleString() }} per tahun
+              @if(convertedSalary)
+                <br />
+                <span style="color:#4ade80;font-size:14px;">≈ {{ convertedSalary.amount.toLocaleString() }} {{ convertedSalary.to }} (kurs {{ convertedSalary.rate }})</span>
+              @end
+            </div>
+          </div>
+
+          <div class="detail-row">
+            <div class="detail-label">
+              Tanggal Bergabung
+            </div>
+            <div class="detail-value">
+              {{ new Date(employee.join_date).toLocaleDateString('id-ID', { year: 'numeric', month: 'long', day: 'numeric' }) }}
+            </div>
+          </div>
+
+          @if(employee.created_by && employee.created_by.name)
+            <div class="detail-row">
+              <div class="detail-label">
+                Dibuat Oleh
+              </div>
+              <div class="detail-value">
+                {{ employee.created_by.name }}
+                @if(employee.created_by.email)
+                  ({{ employee.created_by.email }})
+                @end
+              </div>
+            </div>
+          @end
+          
+          <div class="detail-row">
+            <div class="detail-label">
+              Tanggal Dibuat
+            </div>
+            <div class="detail-value">
+              {{ new Date(employee.created_at).toLocaleDateString('id-ID', { year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' }) }}
+            </div>
+          </div>
+        </div>
+      </main>
+
+      <!-- Footer -->
+      <footer>
+        <p>
+          &copy; {{ new Date().getFullYear() }} Sistem Manajemen Karyawan. Hak cipta dilindungi.
+        </p>
+      </footer>
+
+      <script>
+        // Function to get cookie value by name
+        function getCookie(name) {
+          const value = `; ${document.cookie}`;
+          const parts = value.split(`; ${name}=`);
+          if (parts.length === 2) return parts.pop().split(";").shift();
+          return null;
+        }
+
+        function deleteEmployee(employeeId) {
+          if (confirm("Apakah Anda yakin ingin menghapus karyawan ini?")) {
+            const csrfToken = getCookie("XSRF-TOKEN");
+            if (!csrfToken) {
+              alert("Token CSRF tidak ditemukan. Silakan refresh halaman.");
+              return;
+            }
+            fetch(`/employees/${employeeId}`, {
+              method: "DELETE",
+              headers: {
+                "Content-Type": "application/json",
+                Accept: "application/json",
+                "X-Requested-With": "XMLHttpRequest",
+                "X-XSRF-TOKEN": decodeURIComponent(csrfToken)
+              },
+              credentials: "same-origin"
+            }).then(response => {
+              if (response.ok) {
+                return response.json();
+              } else if (response.status === 403) {
+                throw new Error("Validasi CSRF gagal. Silakan refresh halaman.");
+              } else {
+                throw new Error("Gagal menghapus karyawan");
+              }
+            }).then(data => {
+              alert("Karyawan berhasil dihapus!");
+              window.location.href = "/employees";
+            }).catch(error => {
+              console.error("Error:", error);
+              alert(error.message || "Terjadi kesalahan saat menghapus karyawan");
+            });
+          }
+        }
+      </script>
+    </body>
+  </html>

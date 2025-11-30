@@ -1,0 +1,624 @@
+<!DOCTYPE html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>
+      Daftar Hari Libur - Sistem Manajemen Karyawan
+    </title>
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+        background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
+        min-height: 100vh;
+        color: white;
+      }
+      
+      nav {
+        background: rgba(255, 255, 255, 0.05);
+        backdrop-filter: blur(16px);
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        position: sticky;
+        top: 0;
+        z-index: 100;
+      }
+      
+      nav .container {
+        max-width: 1400px;
+        margin: 0 auto;
+        padding: 0 20px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        height: 64px;
+      }
+      
+      nav .logo {
+        font-size: 20px;
+        font-weight: 700;
+        color: white;
+        text-decoration: none;
+      }
+      
+      nav .nav-links {
+        display: flex;
+        gap: 32px;
+        align-items: center;
+      }
+      
+      nav .nav-links a {
+        color: rgba(255, 255, 255, 0.7);
+        text-decoration: none;
+        font-size: 14px;
+        font-weight: 500;
+        transition: color 0.2s;
+        padding: 8px 0;
+        border-bottom: 2px solid transparent;
+      }
+      
+      nav .nav-links a:hover,
+      nav .nav-links a.active {
+        color: white;
+        border-bottom-color: rgba(255, 255, 255, 0.5);
+      }
+      
+      nav .user-section {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+      }
+      
+      nav .badge {
+        padding: 4px 10px;
+        border-radius: 12px;
+        background: rgba(34, 197, 94, 0.2);
+        color: rgb(134, 239, 172);
+        font-size: 12px;
+        font-weight: 600;
+      }
+      
+      .logout-btn {
+        padding: 8px 16px;
+        border-radius: 8px;
+        border: 1px solid rgba(239, 68, 68, 0.3);
+        background: rgba(239, 68, 68, 0.1);
+        color: rgb(248, 113, 113);
+        cursor: pointer;
+        font-size: 14px;
+        font-weight: 500;
+        transition: all 0.2s;
+      }
+      
+      .logout-btn:hover {
+        background: rgba(239, 68, 68, 0.2);
+        border-color: rgba(239, 68, 68, 0.5);
+      }
+      
+      .main-container {
+        max-width: 1400px;
+        margin: 0 auto;
+        padding: 40px 20px;
+      }
+      
+      .page-header {
+        margin-bottom: 32px;
+      }
+      
+      .page-header h1 {
+        font-size: 32px;
+        font-weight: 700;
+        margin-bottom: 8px;
+      }
+      
+      .page-header p {
+        color: rgba(255, 255, 255, 0.6);
+        font-size: 16px;
+      }
+      
+      .filter-section {
+        background: rgba(255, 255, 255, 0.05);
+        backdrop-filter: blur(16px);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 16px;
+        padding: 24px;
+        margin-bottom: 24px;
+      }
+      
+      .filter-row {
+        display: flex;
+        gap: 16px;
+        flex-wrap: wrap;
+        align-items: end;
+      }
+      
+      .filter-group {
+        flex: 1;
+        min-width: 200px;
+      }
+      
+      .filter-group label {
+        display: block;
+        margin-bottom: 8px;
+        font-size: 14px;
+        font-weight: 500;
+        color: rgba(255, 255, 255, 0.8);
+      }
+      
+      .filter-group select,
+      .filter-group input {
+        width: 100%;
+        padding: 10px 14px;
+        border-radius: 8px;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        background: rgba(255, 255, 255, 0.05);
+        color: white;
+        font-size: 14px;
+      }
+      
+      .btn {
+        padding: 10px 20px;
+        border-radius: 8px;
+        border: none;
+        font-size: 14px;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.2s;
+        text-decoration: none;
+        display: inline-block;
+      }
+      
+      .btn-primary {
+        background: rgb(99, 102, 241);
+        color: white;
+      }
+      
+      .btn-primary:hover {
+        background: rgb(79, 70, 229);
+      }
+      
+      .card {
+        background: rgba(255, 255, 255, 0.05);
+        backdrop-filter: blur(16px);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 16px;
+        overflow: hidden;
+      }
+      
+      .card-header {
+        padding: 24px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      }
+      
+      .card-header h2 {
+        font-size: 20px;
+        font-weight: 600;
+      }
+      
+      .table-container {
+        overflow-x: auto;
+      }
+      
+      table {
+        width: 100%;
+        border-collapse: collapse;
+      }
+      
+      thead {
+        background: rgba(255, 255, 255, 0.02);
+      }
+      
+      th {
+        padding: 16px 24px;
+        text-align: left;
+        font-size: 13px;
+        font-weight: 600;
+        color: rgba(255, 255, 255, 0.6);
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+      }
+      
+      td {
+        padding: 16px 24px;
+        border-top: 1px solid rgba(255, 255, 255, 0.05);
+        font-size: 14px;
+      }
+      
+      tbody tr {
+        transition: background 0.2s;
+      }
+      
+      tbody tr:hover {
+        background: rgba(255, 255, 255, 0.02);
+      }
+      
+      .badge-type {
+        padding: 4px 10px;
+        border-radius: 12px;
+        font-size: 12px;
+        font-weight: 600;
+        display: inline-block;
+      }
+      
+      .badge-national {
+        background: rgba(239, 68, 68, 0.2);
+        color: rgb(248, 113, 113);
+      }
+      
+      .badge-religious {
+        background: rgba(168, 85, 247, 0.2);
+        color: rgb(216, 180, 254);
+      }
+      
+      .badge-company {
+        background: rgba(34, 197, 94, 0.2);
+        color: rgb(134, 239, 172);
+      }
+      
+      .badge-other {
+        background: rgba(156, 163, 175, 0.2);
+        color: rgb(209, 213, 219);
+      }
+      
+      .pagination {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 8px;
+        padding: 24px;
+      }
+      
+      .pagination a,
+      .pagination span {
+        padding: 8px 12px;
+        border-radius: 8px;
+        text-decoration: none;
+        color: rgba(255, 255, 255, 0.7);
+        transition: all 0.2s;
+      }
+      
+      .pagination a:hover {
+        background: rgba(255, 255, 255, 0.1);
+        color: white;
+      }
+      
+      .pagination .active {
+        background: rgb(99, 102, 241);
+        color: white;
+      }
+      
+      .empty-state {
+        padding: 60px 24px;
+        text-align: center;
+        color: rgba(255, 255, 255, 0.5);
+      }
+      
+      .upcoming-holidays {
+        background: rgba(255, 255, 255, 0.05);
+        backdrop-filter: blur(16px);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 16px;
+        padding: 24px;
+        margin-bottom: 24px;
+      }
+      
+      .upcoming-holidays h3 {
+        font-size: 18px;
+        font-weight: 600;
+        margin-bottom: 16px;
+        color: rgba(255, 255, 255, 0.9);
+      }
+      
+      .holiday-list {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+      }
+      
+      .holiday-item {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 12px;
+        background: rgba(255, 255, 255, 0.03);
+        border-radius: 8px;
+        transition: background 0.2s;
+      }
+      
+      .holiday-item:hover {
+        background: rgba(255, 255, 255, 0.06);
+      }
+      
+      .holiday-date {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        min-width: 60px;
+        padding: 8px;
+        background: rgba(99, 102, 241, 0.2);
+        border-radius: 8px;
+      }
+      
+      .date-day {
+        font-size: 24px;
+        font-weight: 700;
+        line-height: 1;
+        color: rgb(165, 180, 252);
+      }
+      
+      .date-month {
+        font-size: 12px;
+        font-weight: 600;
+        text-transform: uppercase;
+        color: rgba(165, 180, 252, 0.7);
+      }
+      
+      .holiday-info {
+        flex: 1;
+      }
+      
+      .holiday-info h4 {
+        font-size: 14px;
+        font-weight: 600;
+        margin-bottom: 4px;
+      }
+      
+      .holiday-info p {
+        font-size: 12px;
+        color: rgba(255, 255, 255, 0.5);
+      }
+    </style>
+  </head>
+  <body>
+    <nav>
+      <div class="container">
+        <a href="/absensi" class="logo">Sistem Karyawan</a>
+        <div class="nav-links">
+          <a href="/absensi">Absensi</a>
+          <a href="/absensi/history">History</a>
+          <a href="/holidays/view" class="active">Hari Libur</a>
+          <a href="/employees/profile">Profil</a>
+        </div>
+        <div class="user-section">
+          <span class="badge">Karyawan</span>
+          <form method="POST" action="/auth/logout" style="display: inline;">
+            {{ csrfField() }}
+            <button type="submit" class="logout-btn">Keluar</button>
+          </form>
+        </div>
+      </div>
+    </nav>
+
+    <div class="main-container">
+      <div class="page-header">
+        <h1>
+          📅 Daftar Hari Libur
+        </h1>
+        <p>
+          Lihat daftar hari libur nasional, keagamaan, dan hari libur perusahaan
+        </p>
+      </div>
+
+      @if(upcomingHolidays.length > 0)
+        <div class="upcoming-holidays">
+          <h3>
+            🎉 Hari Libur Mendatang
+          </h3>
+          <div class="holiday-list">
+            @each(holiday in upcomingHolidays)
+              <div class="holiday-item">
+                <div class="holiday-date">
+                  <div class="date-day">
+                    {{ holiday.date.getDate() }}
+                  </div>
+                  <div class="date-month">
+                    {{ ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'][holiday.date.getMonth()] }}
+                  </div>
+                </div>
+                <div class="holiday-info">
+                  <h4>
+                    {{ holiday.name }}
+                  </h4>
+                  <p>
+                    {{ holiday.date.toLocaleDateString('id-ID', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }) }}
+                  </p>
+                </div>
+                <span class="badge-type badge-{{ holiday.type }}">
+                  @if(holiday.type === 'national')
+                    Nasional
+                  @elseif(holiday.type === 'religious')
+                    Keagamaan
+                  @elseif(holiday.type === 'company')
+                    Perusahaan
+                  @else
+                    Lainnya
+                  @end
+                </span>
+              </div>
+            @end
+          </div>
+        </div>
+      @end
+      
+      <!-- Filter Section -->
+      <div class="filter-section">
+        <form method="GET" action="/holidays/view">
+          <div class="filter-row">
+            <div class="filter-group">
+              <label>Tahun</label>
+              <input type="number" name="year" value="{{ year }}" min="2020" max="2030" />
+            </div>
+            <div class="filter-group">
+              <label>Bulan</label>
+              <select name="month">
+                <option value="">
+                  Semua Bulan
+                </option>
+                <option value="0" {{ month == 0 ? 'selected' : '' }}>
+                  Januari
+                </option>
+                <option value="1" {{ month == 1 ? 'selected' : '' }}>
+                  Februari
+                </option>
+                <option value="2" {{ month == 2 ? 'selected' : '' }}>
+                  Maret
+                </option>
+                <option value="3" {{ month == 3 ? 'selected' : '' }}>
+                  April
+                </option>
+                <option value="4" {{ month == 4 ? 'selected' : '' }}>
+                  Mei
+                </option>
+                <option value="5" {{ month == 5 ? 'selected' : '' }}>
+                  Juni
+                </option>
+                <option value="6" {{ month == 6 ? 'selected' : '' }}>
+                  Juli
+                </option>
+                <option value="7" {{ month == 7 ? 'selected' : '' }}>
+                  Agustus
+                </option>
+                <option value="8" {{ month == 8 ? 'selected' : '' }}>
+                  September
+                </option>
+                <option value="9" {{ month == 9 ? 'selected' : '' }}>
+                  Oktober
+                </option>
+                <option value="10" {{ month == 10 ? 'selected' : '' }}>
+                  November
+                </option>
+                <option value="11" {{ month == 11 ? 'selected' : '' }}>
+                  Desember
+                </option>
+              </select>
+            </div>
+            <div class="filter-group">
+              <label>Tipe</label>
+              <select name="type">
+                <option value="">
+                  Semua Tipe
+                </option>
+                <option value="national" {{ type === 'national' ? 'selected' : '' }}>
+                  Nasional
+                </option>
+                <option value="religious" {{ type === 'religious' ? 'selected' : '' }}>
+                  Keagamaan
+                </option>
+                <option value="company" {{ type === 'company' ? 'selected' : '' }}>
+                  Perusahaan
+                </option>
+                <option value="other" {{ type === 'other' ? 'selected' : '' }}>
+                  Lainnya
+                </option>
+              </select>
+            </div>
+            <button type="submit" class="btn btn-primary">Filter</button>
+          </div>
+        </form>
+      </div>
+
+      <!-- Holidays Table -->
+      <div class="card">
+        <div class="card-header">
+          <h2>
+            Daftar Hari Libur ({{ total }})
+          </h2>
+        </div>
+
+        @if(holidays.length > 0)
+          <div class="table-container">
+            <table>
+              <thead>
+                <tr>
+                  <th>
+                    Nama Hari Libur
+                  </th>
+                  <th>
+                    Tanggal
+                  </th>
+                  <th>
+                    Tipe
+                  </th>
+                  <th>
+                    Berulang
+                  </th>
+                  <th>
+                    Deskripsi
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                @each(holiday in holidays)
+                  <tr>
+                    <td>
+                      <strong>{{ holiday.name }}</strong>
+                    </td>
+                    <td>
+                      {{ holiday.date.toLocaleDateString('id-ID', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }) }}
+                    </td>
+                    <td>
+                      <span class="badge-type badge-{{ holiday.type }}">
+                        @if(holiday.type === 'national')
+                          Nasional
+                        @elseif(holiday.type === 'religious')
+                          Keagamaan
+                        @elseif(holiday.type === 'company')
+                          Perusahaan
+                        @else
+                          Lainnya
+                        @end
+                      </span>
+                    </td>
+                    <td>
+                      {{ holiday.is_recurring ? '✓ Ya' : '✗ Tidak' }}
+                    </td>
+                    <td>
+                      {{ holiday.description || '-' }}
+                    </td>
+                  </tr>
+                @end
+              </tbody>
+            </table>
+          </div>
+
+          @if(totalPages > 1)
+            <div class="pagination">
+              @if(currentPage > 1)
+                <a
+                  href="/holidays/view?page={{ currentPage - 1 }}&year={{ year }}&month={{ month }}&type={{ type }}"
+                >← Sebelumnya</a>
+              @end
+              
+              @each(i in Array.from({ length: totalPages }, (_, i) => i + 1))
+                @if(i === currentPage)
+                  <span class="active">{{ i }}</span>
+                @else
+                  <a href="/holidays/view?page={{ i }}&year={{ year }}&month={{ month }}&type={{ type }}">{{ i }}</a>
+                @end
+              @end
+              
+              @if(currentPage < totalPages)
+                <a
+                  href="/holidays/view?page={{ currentPage + 1 }}&year={{ year }}&month={{ month }}&type={{ type }}"
+                >Selanjutnya →</a>
+              @end
+            </div>
+          @end
+        @else
+          <div class="empty-state">
+            <p>
+              📅 Belum ada hari libur untuk periode ini
+            </p>
+          </div>
+        @end
+      </div>
+    </div>
+  </body>
+</html>
